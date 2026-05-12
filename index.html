@@ -1,54 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>JSON to UEFN Converter</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UEFN Map Converter</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #1a1a1a; color: white; }
-        textarea { width: 100%; height: 200px; background: #333; color: #0f0; border: 1px solid #555; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #007bff; color: white; border: none; margin-top: 10px; }
-        .output-container { margin-top: 20px; }
+        :root {
+            --bg-color: #000000;
+            --card-bg: #111111;
+            --accent-blue: #007bff;
+            --danger-red: #cc0000;
+            --text-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header-bar {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .disclaimer {
+            background-color: var(--danger-red);
+            padding: 20px;
+            border-radius: 4px;
+            text-align: center;
+            max-width: 1000px;
+            margin-bottom: 20px;
+            border: 1px solid #ff0000;
+        }
+
+        .disclaimer h2 { margin: 0 0 10px 0; font-size: 24px; }
+
+        .upload-section {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 1000px;
+            padding: 40px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 20px;
+        }
+
+        button, .file-label {
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button:hover { filter: brightness(1.2); }
+
+        textarea {
+            width: 100%;
+            max-width: 960px;
+            height: 300px;
+            background-color: var(--card-bg);
+            color: #aaa;
+            border: 1px solid #333;
+            padding: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            resize: vertical;
+        }
+
+        #fileInput { display: none; }
+        .file-info { margin-top: 10px; color: #aaa; font-style: italic; }
     </style>
 </head>
 <body>
-    <h1>JSON to UEFN Paste Converter</h1>
-    <p>Paste your JSON below:</p>
-    <textarea id="jsonInput" placeholder='{"items": [...]}'></textarea>
-    <br>
-    <button onclick="convert()">Convert to UEFN Script</button>
 
-    <div class="output-container">
-        <p>Output (Copy this into UEFN):</p>
-        <textarea id="uefnOutput" readonly></textarea>
+    <div class="header-bar">
+        <div>Converter &nbsp; 🔨 Imprint &nbsp; 📄 Examples &nbsp; ⚙️ Settings &nbsp; ❓ Help</div>
+        <div>Created by: YourName &nbsp; Ver. 1.0.0</div>
     </div>
 
-    <script>
-        function convert() {
-            const input = document.getElementById('jsonInput').value;
-            const outputElement = document.getElementById('uefnOutput');
-            
-            try {
-                const data = JSON.parse(input);
-                
-                // Header
-                let script = "Begin Map\n   Begin Level\n";
-                
-                // Logic: Loop through your JSON data and create Actors
-                // This part depends on how your JSON is structured
-                if (Array.isArray(data)) {
-                    data.forEach(item => {
-                        script += `      Begin Actor Class=StaticMeshActor Name=${item.name || 'Object'}\n`;
-                        script += `         Location=(X=${item.x || 0},Y=${item.y || 0},Z=${item.z || 0})\n`;
-                        script += `      End Actor\n`;
-                    });
-                }
+    <div class="disclaimer">
+        <h2>⚠️ DISCLAIMER</h2>
+        <p>Porting UMAPS is not 100% accurate. Converted maps might have missing models or incorrect materials. You will need to do manual cleanup in UEFN.</p>
+    </div>
 
-                // Footer
-                script += "   End Level\nBegin Surface\nEnd Surface\nEnd Map";
-                
-                outputElement.value = script;
-            } catch (e) {
-                alert("Invalid JSON: " + e.message);
+    <div class="upload-section">
+        <label for="fileInput" class="file-label">📁 Choose JSON File</label>
+        <input type="file" id="fileInput" accept=".json">
+        <div id="fileName" class="file-info">No file uploaded</div>
+    </div>
+
+    <div class="button-group">
+        <button onclick="copyToClipboard()">📋 Copy to clipboard</button>
+        <button onclick="processFile()">🔄 Convert to UEFN format</button>
+        <button onclick="downloadTxt()">📥 Download .txt file</button>
+    </div>
+
+    <textarea id="outputField" readonly>
+Begin Map
+    Begin Level
+    End Level
+Begin Surface
+End Surface
+End Map</textarea>
+
+    <script>
+        let jsonData = null;
+
+        // Handle File Selection
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('fileName').innerText = "Uploaded file: " + file.name;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        jsonData = JSON.parse(event.target.result);
+                    } catch (err) {
+                        alert("Error parsing JSON file!");
+                    }
+                };
+                reader.readAsText(file);
             }
+        });
+
+        function processFile() {
+            if (!jsonData) return alert("Please upload a JSON file first!");
+
+            let script = "Begin Map\n   Begin Level\n";
+            
+            // This assumes your JSON is an array of objects
+            // Adjust item.x, item.y, item.z based on your specific JSON keys
+            const items = Array.isArray(jsonData) ? jsonData : (jsonData.actors || []);
+
+            items.forEach((item, index) => {
+                script += `      Begin Actor Class=StaticMeshActor Name=Object_${index}\n`;
+                script += `         Begin Object Class=StaticMeshComponent Name="StaticMeshComponent0"\n`;
+                script += `            RelativeLocation=(X=${item.x || 0},Y=${item.y || 0},Z=${item.z || 0})\n`;
+                script += `         End Object\n`;
+                script += `         RootComponent=StaticMeshComponent0\n`;
+                script += `      End Actor\n`;
+            });
+
+            script += "   End Level\nBegin Surface\nEnd Surface\nEnd Map";
+            document.getElementById('outputField').value = script;
+        }
+
+        function copyToClipboard() {
+            const copyText = document.getElementById("outputField");
+            copyText.select();
+            document.execCommand("copy");
+            alert("Copied to clipboard!");
+        }
+
+        function downloadTxt() {
+            const text = document.getElementById("outputField").value;
+            const blob = new Blob([text], { type: "text/plain" });
+            const anchor = document.createElement("a");
+            anchor.download = "uefn_import.txt";
+            anchor.href = window.URL.createObjectURL(blob);
+            anchor.click();
         }
     </script>
 </body>
