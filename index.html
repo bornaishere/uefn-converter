@@ -4,127 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UEFN Map Converter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg-color: #000000;
-            --card-bg: #111111;
-            --accent-blue: #007bff;
-            --danger-red: #cc0000;
-            --text-color: #ffffff;
+            --bg-color: #050505;
+            --card-bg: #0e0e0e;
+            --accent-blue: #2185d0;
+            --danger-red: #d01919;
+            --text-color: #eeeeee;
+            --border-color: #222;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        .header-bar {
-            width: 100%;
-            max-width: 1200px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            color: #888;
-            margin-bottom: 20px;
+        .navbar {
+            width: 100%; max-width: 1100px;
+            display: flex; justify-content: space-between;
+            font-size: 13px; color: #777; margin-bottom: 20px;
         }
+
+        .navbar span { cursor: pointer; margin-right: 15px; transition: 0.2s; }
+        .navbar span:hover { color: #fff; }
 
         .disclaimer {
             background-color: var(--danger-red);
-            padding: 20px;
-            border-radius: 4px;
-            text-align: center;
-            max-width: 1000px;
-            margin-bottom: 20px;
-            border: 1px solid #ff0000;
+            padding: 20px; border-radius: 4px;
+            text-align: center; max-width: 1100px;
+            margin-bottom: 20px; box-shadow: 0 4px 15px rgba(208, 25, 25, 0.2);
         }
 
-        .disclaimer h2 { margin: 0 0 10px 0; font-size: 24px; }
+        .disclaimer i { font-size: 40px; margin-bottom: 10px; }
+        .disclaimer h2 { margin: 5px 0; letter-spacing: 2px; }
 
-        .upload-section {
+        .upload-zone {
             background-color: var(--card-bg);
-            width: 100%;
-            max-width: 1000px;
-            padding: 40px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid #333;
-            margin-bottom: 20px;
+            width: 100%; max-width: 1100px;
+            padding: 50px 0; border: 1px solid var(--border-color);
+            border-radius: 8px; text-align: center; margin-bottom: 20px;
         }
 
-        .button-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
-            width: 100%;
-            max-width: 1000px;
-            margin-bottom: 20px;
+        .upload-zone i { font-size: 40px; color: #555; }
+
+        .btn-row {
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px; width: 100%; max-width: 1100px; margin-bottom: 20px;
         }
 
-        button, .file-label {
+        .btn {
             background-color: var(--accent-blue);
-            color: white;
-            border: none;
-            padding: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 4px;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            color: white; border: none; padding: 14px;
+            font-weight: bold; cursor: pointer; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            text-transform: capitalize; font-size: 15px;
         }
 
-        button:hover { filter: brightness(1.2); }
+        .btn:hover { filter: brightness(1.2); }
 
         textarea {
-            width: 100%;
-            max-width: 960px;
-            height: 300px;
-            background-color: var(--card-bg);
-            color: #aaa;
-            border: 1px solid #333;
-            padding: 20px;
-            font-family: 'Courier New', Courier, monospace;
-            resize: vertical;
+            width: 100%; max-width: 1060px; height: 350px;
+            background-color: var(--card-bg); color: #888;
+            border: 1px solid var(--border-color);
+            padding: 20px; font-family: monospace; font-size: 13px;
         }
 
-        #fileInput { display: none; }
-        .file-info { margin-top: 10px; color: #aaa; font-style: italic; }
+        input[type="file"] { display: none; }
+        .file-btn { background: #333; padding: 8px 20px; border-radius: 4px; cursor: pointer; display: inline-block; margin-top: 15px; font-size: 13px; }
     </style>
 </head>
 <body>
 
-    <div class="header-bar">
-        <div>Converter &nbsp; 🔨 Imprint &nbsp; 📄 Examples &nbsp; ⚙️ Settings &nbsp; ❓ Help</div>
-        <div>Created by: YourName &nbsp; Ver. 1.0.0</div>
+    <div class="navbar">
+        <div>
+            <span><i class="fa-solid fa-hammer"></i> Converter</span>
+            <span><i class="fa-solid fa-gavel"></i> Imprint</span>
+            <span><i class="fa-solid fa-file-lines"></i> Examples</span>
+            <span><i class="fa-solid fa-gear"></i> Settings</span>
+            <span><i class="fa-solid fa-question"></i> Help</span>
+        </div>
+        <div>Created by: bornaishere | Ver. 1.0.0</div>
     </div>
 
     <div class="disclaimer">
-        <h2>⚠️ DISCLAIMER</h2>
-        <p>Porting UMAPS is not 100% accurate. Converted maps might have missing models or incorrect materials. You will need to do manual cleanup in UEFN.</p>
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <h2>DISCLAIMER</h2>
+        <p>Porting UMAPS is not 100% accurate. Converted maps might have missing models or incorrect materials. Manual cleanup in UEFN is required.</p>
     </div>
 
-    <div class="upload-section">
-        <label for="fileInput" class="file-label">📁 Choose JSON File</label>
+    <div class="upload-zone">
+        <i class="fa-solid fa-file-code"></i>
+        <div id="fileStatus" style="margin-top:10px; color:#aaa;">No file selected</div>
+        <label for="fileInput" class="file-btn">Change file</label>
         <input type="file" id="fileInput" accept=".json">
-        <div id="fileName" class="file-info">No file uploaded</div>
     </div>
 
-    <div class="button-group">
-        <button onclick="copyToClipboard()">📋 Copy to clipboard</button>
-        <button onclick="processFile()">🔄 Convert to UEFN format</button>
-        <button onclick="downloadTxt()">📥 Download .txt file</button>
+    <div class="btn-row">
+        <button class="btn" onclick="copyText()"><i class="fa-solid fa-copy"></i> Copy to clipboard</button>
+        <button class="btn" onclick="processData()"><i class="fa-solid fa-code"></i> Convert to UEFN format</button>
+        <button class="btn" onclick="downloadFile()"><i class="fa-solid fa-download"></i> Download .txt file</button>
     </div>
 
-    <textarea id="outputField" readonly>
-Begin Map
+    <textarea id="output">Begin Map
     Begin Level
     End Level
 Begin Surface
@@ -132,36 +117,26 @@ End Surface
 End Map</textarea>
 
     <script>
-        let jsonData = null;
+        let rawData = null;
 
-        // Handle File Selection
-        document.getElementById('fileInput').addEventListener('change', function(e) {
+        document.getElementById('fileInput').onchange = function(e) {
             const file = e.target.files[0];
-            if (file) {
-                document.getElementById('fileName').innerText = "Uploaded file: " + file.name;
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    try {
-                        jsonData = JSON.parse(event.target.result);
-                    } catch (err) {
-                        alert("Error parsing JSON file!");
-                    }
-                };
-                reader.readAsText(file);
-            }
-        });
+            if (!file) return;
+            document.getElementById('fileStatus').innerText = "Uploaded file: " + file.name;
+            const reader = new FileReader();
+            reader.onload = (event) => { rawData = JSON.parse(event.target.result); };
+            reader.readAsText(file);
+        };
 
-        function processFile() {
-            if (!jsonData) return alert("Please upload a JSON file first!");
-
+        function processData() {
+            if (!rawData) return alert("Please upload a JSON file first!");
             let script = "Begin Map\n   Begin Level\n";
             
-            // This assumes your JSON is an array of objects
-            // Adjust item.x, item.y, item.z based on your specific JSON keys
-            const items = Array.isArray(jsonData) ? jsonData : (jsonData.actors || []);
+            // Auto-detect array or "actors" key
+            const items = Array.isArray(rawData) ? rawData : (rawData.actors || rawData.exports || []);
 
-            items.forEach((item, index) => {
-                script += `      Begin Actor Class=StaticMeshActor Name=Object_${index}\n`;
+            items.forEach((item, i) => {
+                script += `      Begin Actor Class=StaticMeshActor Name=Object_${i}\n`;
                 script += `         Begin Object Class=StaticMeshComponent Name="StaticMeshComponent0"\n`;
                 script += `            RelativeLocation=(X=${item.x || 0},Y=${item.y || 0},Z=${item.z || 0})\n`;
                 script += `         End Object\n`;
@@ -170,23 +145,22 @@ End Map</textarea>
             });
 
             script += "   End Level\nBegin Surface\nEnd Surface\nEnd Map";
-            document.getElementById('outputField').value = script;
+            document.getElementById('output').value = script;
         }
 
-        function copyToClipboard() {
-            const copyText = document.getElementById("outputField");
-            copyText.select();
+        function copyText() {
+            const area = document.getElementById("output");
+            area.select();
             document.execCommand("copy");
             alert("Copied to clipboard!");
         }
 
-        function downloadTxt() {
-            const text = document.getElementById("outputField").value;
-            const blob = new Blob([text], { type: "text/plain" });
-            const anchor = document.createElement("a");
-            anchor.download = "uefn_import.txt";
-            anchor.href = window.URL.createObjectURL(blob);
-            anchor.click();
+        function downloadFile() {
+            const blob = new Blob([document.getElementById("output").value], {type: "text/plain"});
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "UEFN_Import.txt";
+            link.click();
         }
     </script>
 </body>
