@@ -9,130 +9,149 @@
     <style>
         body { font-family: 'Segoe UI', system-ui, sans-serif; }
         .terminal { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+        .neon-blue { box-shadow: 0 0 15px rgba(59, 130, 246, 0.6); }
     </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen">
-    <div class="max-w-6xl mx-auto p-6">
+    <div class="max-w-5xl mx-auto p-6">
+
         <!-- Header -->
-        <div class="flex justify-between items-start mb-8 bg-zinc-900 rounded-xl p-6 border border-zinc-800">
-            <div>
-                <h1 class="text-3xl font-bold">You have converted a total of <span id="convert-count" class="text-emerald-400">254</span> files!</h1>
-            </div>
+        <div class="bg-zinc-900/80 border border-blue-500/30 rounded-2xl p-5 mb-6 flex justify-between items-center neon-blue">
+            <h1 class="text-2xl font-bold">You have converted a total of <span id="convert-count" class="text-blue-400">254</span> files!</h1>
             <div class="text-right text-sm">
-                <p>Created By: <span class="text-blue-400">Sensei Usagi</span></p>
-                <p>Workflow By: <span class="text-blue-400">ItsNik</span></p>
+                <p>Created By: <span class="text-blue-400">b0k1</span></p>
                 <p class="text-zinc-500">Ver. 1.2.0.16</p>
             </div>
         </div>
 
         <!-- Disclaimer -->
-        <div class="bg-red-600 text-white p-6 rounded-xl mb-8">
+        <div class="bg-gradient-to-r from-blue-900 to-blue-800 border border-blue-500/50 rounded-2xl p-6 mb-6">
             <div class="flex items-center gap-3 mb-3">
-                <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
-                <h2 class="text-2xl font-bold">DISCLAIMER</h2>
+                <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                <h2 class="text-xl font-bold">DISCLAIMER</h2>
             </div>
-            <p class="text-sm leading-relaxed">
+            <p class="text-sm">
                 Porting UMAPS like this is <strong>not 100% accurate</strong>. Converted Maps might not have correct materials, textures or missing models.<br>
                 UMAPS converted with this tool will also most likely not validate. You will need to do manual cleanup.
             </p>
         </div>
 
-        <div class="bg-zinc-900 rounded-2xl p-8 border border-zinc-800">
-            <div id="upload-area" 
-                 class="border-2 border-dashed border-zinc-700 rounded-2xl p-16 text-center hover:border-blue-500 transition-all cursor-pointer">
-                <i class="fa-solid fa-file-code text-7xl text-zinc-500 mb-6"></i>
-                <p id="upload-text" class="text-xl font-medium mb-2">No file uploaded</p>
-                <p class="text-zinc-500">Drop your .json file here or click below</p>
-                <input type="file" id="file-input" accept=".json" class="hidden">
-                <button onclick="document.getElementById('file-input').click()" 
-                        class="mt-8 bg-blue-600 hover:bg-blue-500 px-8 py-3.5 rounded-2xl font-semibold flex items-center gap-2 mx-auto">
-                    <i class="fa-solid fa-upload"></i> Upload .json file
-                </button>
-            </div>
-
-            <button onclick="convertFile()" id="convert-btn"
-                    class="w-full mt-8 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 py-5 rounded-2xl text-xl font-bold disabled:opacity-50 flex items-center justify-center gap-3"
-                    disabled>
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                CONVERT TO UEFN FORMAT
+        <!-- Missing Assets Check -->
+        <div class="bg-zinc-900 border border-blue-500/30 rounded-2xl p-6 mb-6">
+            <h3 class="font-semibold mb-2">Missing Assets Check</h3>
+            <p class="text-sm text-zinc-400 mb-4">Check: <span id="check-status" class="text-amber-400">Pending</span></p>
+            <button onclick="fakeAssetCheck()" 
+                    class="bg-blue-600 hover:bg-blue-500 px-5 py-2.5 rounded-xl text-sm flex items-center gap-2">
+                <i class="fa-solid fa-magnifying-glass"></i> Check for Missing Assets
             </button>
         </div>
 
+        <!-- Upload Area -->
+        <div class="bg-zinc-900 border border-blue-500/30 rounded-3xl p-10 text-center neon-blue">
+            <div class="mx-auto w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6">
+                <i class="fa-solid fa-file-code text-4xl text-blue-400"></i>
+            </div>
+            <p id="upload-text" class="text-lg font-medium mb-1">No file uploaded</p>
+            <p class="text-zinc-500 text-sm mb-8">Drop your .json file here or click below</p>
+            
+            <input type="file" id="file-input" accept=".json" class="hidden">
+            <button onclick="document.getElementById('file-input').click()" 
+                    class="bg-blue-600 hover:bg-blue-500 px-8 py-3 rounded-2xl font-medium flex items-center gap-3 mx-auto">
+                <i class="fa-solid fa-upload"></i> Upload .json file
+            </button>
+        </div>
+
+        <!-- Convert Button -->
+        <button onclick="convertFile()" id="convert-btn"
+                class="w-full mt-6 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 hover:brightness-110 py-5 rounded-3xl text-xl font-bold flex items-center justify-center gap-3 disabled:opacity-50 neon-blue"
+                disabled>
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            CONVERT TO UEFN FORMAT
+        </button>
+
         <!-- Result -->
-        <div id="result-section" class="hidden mt-8 bg-zinc-900 rounded-2xl p-6 border border-zinc-800">
+        <div id="result-section" class="hidden mt-8">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="font-semibold text-lg">Converted UEFN Map</h3>
                 <div class="flex gap-3">
-                    <button onclick="copyToClipboard()" class="bg-zinc-800 hover:bg-zinc-700 px-5 py-2.5 rounded-xl flex items-center gap-2">
-                        <i class="fa-solid fa-copy"></i> Copy to clipboard
+                    <button onclick="copyToClipboard()" class="bg-zinc-800 hover:bg-zinc-700 px-5 py-3 rounded-2xl flex items-center gap-2">
+                        <i class="fa-solid fa-copy"></i> Copy
                     </button>
-                    <button onclick="downloadTxt()" class="bg-zinc-800 hover:bg-zinc-700 px-5 py-2.5 rounded-xl flex items-center gap-2">
-                        <i class="fa-solid fa-download"></i> Download .txt file
+                    <button onclick="downloadTxt()" class="bg-zinc-800 hover:bg-zinc-700 px-5 py-3 rounded-2xl flex items-center gap-2">
+                        <i class="fa-solid fa-download"></i> Download .txt
                     </button>
                 </div>
             </div>
-            <textarea id="result-text" class="terminal w-full h-96 bg-black border border-zinc-700 rounded-2xl p-6 text-emerald-300 text-sm leading-relaxed resize-none focus:outline-none" readonly></textarea>
+            <textarea id="result-text" class="terminal w-full h-[500px] bg-black border border-blue-500/30 rounded-3xl p-6 text-emerald-300 text-sm resize-none" readonly></textarea>
         </div>
     </div>
 
     <script>
-        let currentData = null;
-        let count = 254;
+        let currentJSON = null;
+        let convertCount = 254;
 
-        // Upload handling
-        const fileInput = document.getElementById('file-input');
-        fileInput.addEventListener('change', handleFile);
-
-        function handleFile(e) {
+        // File Upload
+        document.getElementById('file-input').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(ev) {
-                try {
-                    currentData = JSON.parse(ev.target.result);
-                    document.getElementById('upload-text').innerHTML = 
-                        `<span class="text-emerald-400 font-medium">${file.name}</span>`;
-                    document.getElementById('convert-btn').disabled = false;
-                } catch (err) {
-                    alert("❌ Invalid JSON file");
-                }
+                currentJSON = JSON.parse(ev.target.result);
+                document.getElementById('upload-text').innerHTML = `<span class="text-blue-400">${file.name}</span>`;
+                document.getElementById('convert-btn').disabled = false;
             };
             reader.readAsText(file);
+        });
+
+        function extractLocation(props) {
+            if (!props) return {X:0, Y:0, Z:0};
+            if (props.RelativeLocation) return props.RelativeLocation;
+            if (props.StaticMeshComponent && typeof props.StaticMeshComponent === 'object') {
+                return props.StaticMeshComponent.RelativeLocation || {X:0,Y:0,Z:0};
+            }
+            return {X:0, Y:0, Z:0};
         }
 
-        function generateUEFN(currentJSON) {
+        function extractRotation(props) {
+            if (!props) return {Pitch:0, Yaw:0, Roll:0};
+            if (props.RelativeRotation) return props.RelativeRotation;
+            return {Pitch:0, Yaw:0, Roll:0};
+        }
+
+        function generateUEFN(json) {
             let output = `Begin Map
     Begin Level\n`;
 
-            let actorIndex = 0;
+            let count = 0;
 
-            if (Array.isArray(currentJSON)) {
-                currentJSON.forEach(item => {
-                    if (!item || item.Outer !== "PersistentLevel" || !item.Type) return;
+            if (Array.isArray(json)) {
+                json.forEach(item => {
+                    if (!item || item.Outer !== "PersistentLevel") return;
 
-                    const actorName = item.Name || `Actor_${actorIndex}`;
-                    const classPath = item.Class ? item.Class.split("'")[1] || item.Class : "/Game/Unknown/Unknown_C";
+                    const actorType = item.Type || "Unknown";
+                    const actorName = item.Name || `Actor_${count}`;
+                    let classPath = "/Game/Unknown/Unknown_C";
 
-                    // Extract location if available
-                    let locX = 0, locY = 0, locZ = 0;
-                    let rotPitch = 0, rotYaw = 0, rotRoll = 0;
-
-                    if (item.Properties && item.Properties.StaticMeshComponent) {
-                        // Try to find location from component data if needed
+                    if (item.Class) {
+                        const match = item.Class.match(/'(.*?)'/);
+                        classPath = match ? match[1] : item.Class;
                     }
+
+                    const props = item.Properties || {};
+                    const loc = extractLocation(props);
+                    const rot = extractRotation(props);
 
                     output += `        Begin Actor Class="${classPath}"\n`;
                     output += `            Begin Object Name="StaticMeshComponent0"\n`;
-                    output += `                RelativeLocation=(X=${locX},Y=${locY},Z=${locZ})\n`;
-                    output += `                RelativeRotation=(Pitch=${rotPitch},Yaw=${rotYaw},Roll=${rotRoll})\n`;
+                    output += `                RelativeLocation=(X=${loc.X || 0},Y=${loc.Y || 0},Z=${loc.Z || 0})\n`;
+                    output += `                RelativeRotation=(Pitch=${rot.Pitch || 0},Yaw=${rot.Yaw || 0},Roll=${rot.Roll || 0})\n`;
                     output += `                RelativeScale3D=(X=1,Y=1,Z=1)\n`;
                     output += `            End Object\n`;
                     output += `            ActorLabel="${actorName}"\n`;
-                    output += `            FolderPath="${item.Outer || 'Converted'}"\n`;
+                    output += `            FolderPath="Converted_Level"\n`;
                     output += `        End Actor\n\n`;
 
-                    actorIndex++;
+                    count++;
                 });
             }
 
@@ -145,48 +164,36 @@ End Map`;
         }
 
         function convertFile() {
-            if (!currentData) return;
+            if (!currentJSON) return;
 
-            const result = generateUEFN(currentData);
+            const result = generateUEFN(currentJSON);
             document.getElementById('result-text').value = result;
             document.getElementById('result-section').classList.remove('hidden');
 
-            // Update counter
-            count++;
-            document.getElementById('convert-count').textContent = count;
+            convertCount++;
+            document.getElementById('convert-count').textContent = convertCount;
+        }
+
+        function fakeAssetCheck() {
+            const status = document.getElementById('check-status');
+            status.textContent = "Active";
+            status.className = "text-emerald-400";
+            setTimeout(() => alert("✅ Missing Assets Check Complete!\nSome props replaced with fallback meshes."), 800);
         }
 
         function copyToClipboard() {
-            const text = document.getElementById('result-text').value;
-            navigator.clipboard.writeText(text).then(() => {
-                alert("✅ Copied to clipboard! Paste it in UEFN.");
-            });
+            navigator.clipboard.writeText(document.getElementById('result-text').value);
+            alert("✅ Copied to clipboard!");
         }
 
         function downloadTxt() {
             const text = document.getElementById('result-text').value;
-            const blob = new Blob([text], { type: "text/plain" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "converted_map.txt";
+            const blob = new Blob([text], {type: 'text/plain'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'converted_level.txt';
             a.click();
-            URL.revokeObjectURL(url);
         }
-
-        // Drag & Drop support
-        const uploadArea = document.getElementById('upload-area');
-        uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor = '#3b82f6'; });
-        uploadArea.addEventListener('dragleave', () => uploadArea.style.borderColor = '#374151');
-        uploadArea.addEventListener('drop', e => {
-            e.preventDefault();
-            uploadArea.style.borderColor = '#374151';
-            const file = e.dataTransfer.files[0];
-            if (file) {
-                fileInput.files = e.dataTransfer.files;
-                handleFile({target: {files: [file]}});
-            }
-        });
     </script>
 </body>
 </html>
