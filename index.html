@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>JSON to UEFN Converter</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #1a1a1a; color: white; }
+        textarea { width: 100%; height: 200px; background: #333; color: #0f0; border: 1px solid #555; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #007bff; color: white; border: none; margin-top: 10px; }
+        .output-container { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>JSON to UEFN Paste Converter</h1>
+    <p>Paste your JSON below:</p>
+    <textarea id="jsonInput" placeholder='{"items": [...]}'></textarea>
+    <br>
+    <button onclick="convert()">Convert to UEFN Script</button>
+
+    <div class="output-container">
+        <p>Output (Copy this into UEFN):</p>
+        <textarea id="uefnOutput" readonly></textarea>
+    </div>
+
+    <script>
+        function convert() {
+            const input = document.getElementById('jsonInput').value;
+            const outputElement = document.getElementById('uefnOutput');
+            
+            try {
+                const data = JSON.parse(input);
+                
+                // Header
+                let script = "Begin Map\n   Begin Level\n";
+                
+                // Logic: Loop through your JSON data and create Actors
+                // This part depends on how your JSON is structured
+                if (Array.isArray(data)) {
+                    data.forEach(item => {
+                        script += `      Begin Actor Class=StaticMeshActor Name=${item.name || 'Object'}\n`;
+                        script += `         Location=(X=${item.x || 0},Y=${item.y || 0},Z=${item.z || 0})\n`;
+                        script += `      End Actor\n`;
+                    });
+                }
+
+                // Footer
+                script += "   End Level\nBegin Surface\nEnd Surface\nEnd Map";
+                
+                outputElement.value = script;
+            } catch (e) {
+                alert("Invalid JSON: " + e.message);
+            }
+        }
+    </script>
+</body>
+</html>
