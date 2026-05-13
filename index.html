@@ -1,306 +1,168 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UEFN Ultimate Converter v4.2</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <title>Unreal Multi-Tool - All In One</title>
     <style>
-        body { font-family: 'Lato', system-ui, sans-serif; }
-        .terminal { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-        .neon-blue { box-shadow: 0 0 30px rgba(59, 130, 246, 0.7); }
-        .tab-active { border-bottom: 5px solid #3b82f6; font-weight: 700; color: white; }
-        .modal { animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        @keyframes modalPop { from { opacity: 0; transform: scale(0.7) translateY(40px); } }
+        body { font-family: 'Segoe UI', sans-serif; margin:0; background:#1e1e1e; color:#ddd; }
+        h1 { text-align:center; color:#4fc3f7; padding:20px; margin:0; background:#252526; }
+        .tabs { display:flex; background:#252526; border-bottom:3px solid #333; }
+        .tab-button {
+            padding:16px 24px; background:transparent; border:none; color:#aaa; font-size:16px; cursor:pointer;
+        }
+        .tab-button.active { background:#1e1e1e; color:#4fc3f7; border-bottom:4px solid #4fc3f7; }
+        .tab-content { display:none; padding:20px; background:#1e1e1e; }
+        .tab-content.active { display:block; }
+        textarea { width:100%; background:#252526; color:#ddd; border:1px solid #555; border-radius:4px; padding:12px; font-family:Consolas,monospace; box-sizing:border-box; }
+        button { background:#0e70c0; color:white; border:none; padding:12px 20px; margin:5px; border-radius:4px; cursor:pointer; }
+        button:hover { background:#1087e0; }
+        .instructions { background:#333; padding:15px; border-radius:6px; margin-bottom:15px; }
+
+        /* UMAP tab */
+        #tab2 { padding: 0; }
+        #umap-frame {
+            width: 100%;
+            height: calc(100vh - 120px);
+            min-height: 600px;
+            border: none;
+            display: block;
+            background: #1e1e1e;
+        }
     </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen pb-12">
-<div class="max-w-7xl mx-auto p-6">
+<body>
+    <h1>Unreal Engine Multi-Tool (All In One)</h1>
 
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-8 bg-zinc-900 border border-blue-500/30 rounded-3xl p-6 neon-blue">
-        <h1 class="text-3xl font-bold flex items-center gap-3">
-            <i class="fa-solid fa-map"></i> UEFN Ultimate Converter <span class="text-blue-400 text-xl">v4.2</span>
-        </h1>
-        <div class="text-right">
-            <div>Total Converted: <span id="convert-count" class="text-blue-400 font-mono font-bold">512</span></div>
-        </div>
+    <div class="tabs">
+        <button class="tab-button active" onclick="switchTab(0)">Asset Diff</button>
+        <button class="tab-button" onclick="switchTab(1)">Collision Converter</button>
+        <button class="tab-button" onclick="switchTab(2)">UMAP Converter</button>
     </div>
 
-    <!-- Tabs -->
-    <div class="flex border-b border-zinc-700 mb-8 overflow-x-auto">
-        <button onclick="switchTab(0)" id="tab0" class="tab px-10 py-5 tab-active">Main Converter</button>
-        <button onclick="switchTab(1)" id="tab1" class="tab px-10 py-5">Missing Assets</button>
-        <button onclick="switchTab(2)" id="tab2" class="tab px-10 py-5">Collision</button>
-        <button onclick="switchTab(3)" id="tab3" class="tab px-10 py-5">Settings</button>
-    </div>
-
-    <!-- ==================== MAIN CONVERTER ==================== -->
-    <div id="panel0">
-        <div class="bg-zinc-900 rounded-3xl p-10 text-center neon-blue">
-            <label class="cursor-pointer block">
-                <input type="file" id="main-file" accept=".json" class="hidden">
-                <div class="border-4 border-dashed border-blue-500/50 hover:border-blue-400 rounded-3xl py-24 transition-all">
-                    <i class="fa-solid fa-cloud-upload-alt text-7xl mb-6 text-blue-400"></i>
-                    <p class="text-2xl font-semibold">Drop or Click to Upload Main Level JSON</p>
-                    <p id="main-filename" class="mt-4 text-zinc-400">No file selected</p>
-                </div>
-            </label>
-        </div>
-
-        <button onclick="startConversion()" id="convert-btn"
-                class="mt-8 w-full py-8 text-2xl font-bold bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 rounded-3xl neon-blue disabled:opacity-50 transition-all"
-                disabled>
-            🚀 START FULL CONVERSION
-        </button>
-
-        <div id="result-section" class="hidden mt-10">
-            <textarea id="result-text" class="terminal w-full h-96 bg-black border border-emerald-500/30 rounded-3xl p-8 text-emerald-300 resize-y" readonly></textarea>
-            <div class="flex gap-4 mt-6">
-                <button onclick="copyResult()" class="flex-1 py-6 bg-zinc-800 hover:bg-zinc-700 rounded-3xl text-lg font-semibold">📋 Copy to Clipboard</button>
-                <button onclick="downloadResult()" class="flex-1 py-6 bg-emerald-600 hover:bg-emerald-500 rounded-3xl text-lg font-semibold">⬇️ Download .txt</button>
+    <!-- Tab 1: Asset Diff -->
+    <div id="tab0" class="tab-content active">
+        <div class="instructions"><strong>Asset Diff Tool</strong> — Compare Before &amp; After level exports</div>
+        <div style="display:flex; gap:20px;">
+            <div style="flex:1;">
+                <h3>Before</h3>
+                <textarea id="beforeBox" rows="16" placeholder="Paste BEFORE level text..."></textarea>
+            </div>
+            <div style="flex:1;">
+                <h3>After</h3>
+                <textarea id="afterBox" rows="16" placeholder="Paste AFTER level text..."></textarea>
             </div>
         </div>
+        <div style="margin:15px 0;">
+            <input type="file" id="rulesFile" accept=".json">
+            <button id="compareButton">Compare</button>
+            <button onclick="copyField('outputBox')">Copy Result</button>
+        </div>
+        <h3>Result</h3>
+        <textarea id="outputBox" rows="12" readonly></textarea>
     </div>
 
-    <!-- ==================== MISSING ASSETS ==================== -->
-    <div id="panel1" class="hidden">
-        <div class="bg-zinc-900 rounded-3xl p-8">
-            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3"><i class="fa-solid fa-search"></i> Missing Asset Checker</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <textarea id="before-box" class="terminal h-96 bg-black border border-zinc-700 rounded-2xl p-6" placeholder="Paste BEFORE JSON or text..."></textarea>
-                <textarea id="after-box" class="terminal h-96 bg-black border border-zinc-700 rounded-2xl p-6" placeholder="Paste AFTER JSON or text..."></textarea>
-            </div>
-            <button onclick="compareAssets()" class="mt-6 w-full py-5 bg-amber-600 hover:bg-amber-500 rounded-2xl text-xl font-bold">COMPARE ASSETS</button>
-            <div id="missing-result" class="mt-8 hidden bg-black border border-amber-500/50 rounded-2xl p-8 terminal text-sm overflow-auto max-h-96"></div>
-        </div>
+    <!-- Tab 2: Collision Converter -->
+    <div id="tab1" class="tab-content">
+        <div class="instructions"><strong>Collision Converter</strong> — FModel AggGeom JSON to Unreal format</div>
+        <input type="file" id="fileInput" accept=".json"><br><br>
+        <button id="convertButton">Convert Collision</button>
+        <button id="copyCollisionBtn">Copy Output</button>
+        <h3>Output</h3>
+        <textarea id="collisionOutput" rows="18" readonly></textarea>
     </div>
 
-    <!-- ==================== COLLISION ==================== -->
-    <div id="panel2" class="hidden">
-        <div class="bg-zinc-900 rounded-3xl p-8">
-            <h2 class="text-2xl font-bold mb-6">Collision Converter</h2>
-            <input type="file" id="collision-file" accept=".json" class="hidden">
-            <button onclick="document.getElementById('collision-file').click()" class="w-full py-6 bg-blue-600 hover:bg-blue-500 rounded-2xl mb-4 font-semibold">Upload AggGeom JSON</button>
-            <textarea id="collision-input" rows="10" class="terminal w-full bg-black border border-zinc-700 rounded-2xl p-6" placeholder="Or paste collision JSON here..."></textarea>
-            <button onclick="convertCollision()" class="mt-6 w-full py-6 bg-emerald-600 hover:bg-emerald-500 rounded-2xl text-xl font-bold">GENERATE UEFN COLLISION CODE</button>
-            <pre id="collision-output" class="hidden mt-8 bg-black border border-emerald-500 rounded-2xl p-8 terminal text-xs overflow-auto max-h-[500px]"></pre>
-        </div>
+    <!-- Tab 3: UMAP Converter (iframe) -->
+    <div id="tab2" class="tab-content">
+        <iframe id="umap-frame" title="UMAP to UEFN Converter"></iframe>
     </div>
 
-    <!-- ==================== SETTINGS ==================== -->
-    <div id="panel3" class="hidden">
-        <div class="bg-zinc-900 rounded-3xl p-8 max-w-2xl mx-auto">
-            <h2 class="text-2xl font-bold mb-8">Settings</h2>
-            <div class="space-y-8">
-                <div class="bg-zinc-800 p-6 rounded-2xl space-y-5">
-                    <label class="flex justify-between items-center"><span>Enable Sub-Level (POI) Import</span><input type="checkbox" id="s-propagate" checked class="w-6 h-6 accent-blue-500"></label>
-                    <label class="flex justify-between items-center"><span>Auto-fix Textures</span><input type="checkbox" id="s-autofix" checked class="w-6 h-6 accent-blue-500"></label>
-                    <label class="flex justify-between items-center"><span>Convert Buildings Only</span><input type="checkbox" id="s-buildings" class="w-6 h-6 accent-blue-500"></label>
-                </div>
-                <div>
-                    <label class="block text-sm mb-2">Default Folder Name</label>
-                    <input type="text" id="s-folder" value="Imported_POI" class="w-full bg-black border border-zinc-600 rounded-2xl px-5 py-4">
-                </div>
-                <button onclick="saveSettings()" class="w-full py-6 bg-blue-600 hover:bg-blue-500 rounded-3xl text-xl font-bold">Save & Apply Settings</button>
-            </div>
-        </div>
-    </div>
-</div>
+    <script>
+        // Tab System — lazy-loads the UMAP iframe on first visit
+        let umapLoaded = false;
 
-<!-- SUB-LEVEL MODAL -->
-<div id="sub-modal" class="hidden fixed inset-0 bg-black/95 flex items-center justify-center z-50">
-    <div class="bg-zinc-900 rounded-3xl p-10 max-w-lg w-full modal">
-        <h2 class="text-2xl font-bold mb-2">Additional World / POI Detected</h2>
-        <p id="sub-path" class="text-blue-400 font-mono break-all mb-8 text-sm"></p>
-        
-        <div class="border-2 border-dashed border-blue-500 rounded-3xl p-12 text-center hover:border-blue-400 transition-all">
-            <input type="file" id="sub-file-input" accept=".json" class="hidden">
-            <button onclick="document.getElementById('sub-file-input').click()" class="text-xl font-semibold">
-                <i class="fa-solid fa-upload text-5xl block mb-4"></i>
-                Upload JSON for this Sub-Level
-            </button>
-        </div>
+        function switchTab(n) {
+            document.querySelectorAll('.tab-button').forEach((b, i) => b.classList.toggle('active', i === n));
+            document.querySelectorAll('.tab-content').forEach((c, i) => c.classList.toggle('active', i === n));
 
-        <div class="flex gap-4 mt-10">
-            <button onclick="skipSubLevel()" class="flex-1 py-6 bg-zinc-800 hover:bg-zinc-700 rounded-3xl text-lg">Skip This POI</button>
-            <button onclick="submitSubLevel()" class="flex-1 py-6 bg-blue-600 hover:bg-blue-500 rounded-3xl text-lg">Submit & Continue</button>
-        </div>
-        <p class="text-center text-xs text-zinc-500 mt-6">POI <span id="sub-counter">1</span>/<span id="sub-total">1</span></p>
-    </div>
-</div>
+            if (n === 2 && !umapLoaded) {
+                umapLoaded = true;
+                document.getElementById('umap-frame').src = 'umap-converter.html';
+            }
+        }
 
-<script>
-    // ============== STATE ==============
-    let mainJSON = null;
-    let subLevels = new Map();
-    let pendingSubs = [];
-    let currentSubIndex = 0;
-    let convertCount = 512;
+        // ==================== ASSET DIFF TOOL ====================
+        function canonicalizeAsset(raw) {
+            if (!raw) return raw;
+            let s = raw.replace(/^['"]+|['",\)\;]+$/g, "").trim();
+            if (!s.includes(".")) return s;
+            const firstDot = s.indexOf(".");
+            const main = s.substring(0, firstDot);
+            const rest = s.substring(firstDot + 1);
+            if (/^\d+$/.test(rest)) return main;
+            const secondClean = rest.split(".")[0].replace(/^Default__/, "").replace(/_C$/, "");
+            return secondClean ? `${main}.${secondClean}` : main;
+        }
 
-    let settings = {
-        propagateLevels: true,
-        autoFixTextures: true,
-        buildingsOnly: false,
-        customFolder: "Imported_POI"
-    };
+        function findAllMatches(text) {
+            return [...text.matchAll(/\/Game\/[^\s"']+/g)].map(m => canonicalizeAsset(m[0]));
+        }
 
-    // ============== TABS ==============
-    function switchTab(n) {
-        document.querySelectorAll('[id^="panel"]').forEach(p => p.classList.add('hidden'));
-        document.getElementById('panel' + n).classList.remove('hidden');
-        document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('tab-active', i === n));
-    }
+        document.getElementById("compareButton").addEventListener("click", () => {
+            const before = document.getElementById("beforeBox").value;
+            const after = document.getElementById("afterBox").value;
+            if (!before || !after) return alert("Please paste both Before and After text");
+            const beforeSet = new Set(findAllMatches(before));
+            const afterSet  = new Set(findAllMatches(after));
+            const missing   = [...beforeSet].filter(x => !afterSet.has(x)).sort();
+            document.getElementById("outputBox").value = missing.length ? missing.join("\n") : "No missing assets found.";
+        });
 
-    // ============== FILE UPLOAD ==============
-    document.getElementById('main-file').addEventListener('change', e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        document.getElementById('main-filename').textContent = file.name;
-        const reader = new FileReader();
-        reader.onload = ev => {
-            mainJSON = JSON.parse(ev.target.result);
-            document.getElementById('convert-btn').disabled = false;
-        };
-        reader.readAsText(file);
-    });
-
-    // ============== CONVERSION ==============
-    function startConversion() {
-        if (!mainJSON) return alert("Upload main level first");
-
-        pendingSubs = [];
-        subLevels.clear();
-
-        if (settings.propagateLevels) {
-            mainJSON.forEach(item => {
-                if (item.Type === "World" || (item.Properties && item.Properties.Level)) {
-                    const path = item.Name || item.Path || "Unknown_POI";
-                    if (!pendingSubs.includes(path)) pendingSubs.push(path);
+        // ==================== COLLISION CONVERTER ====================
+        document.getElementById("convertButton").addEventListener("click", () => {
+            const file = document.getElementById("fileInput").files[0];
+            if (!file) return alert("Please upload JSON file first.");
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    let convexOutput = "", boxOutput = "";
+                    json.forEach(entry => {
+                        const geom = entry.Properties?.AggGeom;
+                        if (!geom) return;
+                        if (geom.ConvexElems) {
+                            const list = geom.ConvexElems.map(elem => {
+                                const verts = elem.VertexData.map(v => `(X=${v.X},Y=${v.Y},Z=${v.Z})`).join(",");
+                                return `(VertexData=(${verts}),IndexData=(${elem.IndexData.join(",")}),ElemBox=(Min=(X=${elem.ElemBox.Min.X},Y=${elem.ElemBox.Min.Y},Z=${elem.ElemBox.Min.Z}),Max=(X=${elem.ElemBox.Max.X},Y=${elem.ElemBox.Max.Y},Z=${elem.ElemBox.Max.Z}),IsValid=True))`;
+                            });
+                            convexOutput = `ConvexElems=(${list.join(",")})`;
+                        }
+                        if (geom.BoxElems) {
+                            const list = geom.BoxElems.map(elem => {
+                                const c = elem.Center, r = elem.Rotation;
+                                return `(Center=(X=${c.X},Y=${c.Y},Z=${c.Z}),Rotation=(Pitch=${r.Pitch},Yaw=${r.Yaw},Roll=${r.Roll}),X=${elem.X},Y=${elem.Y},Z=${elem.Z})`;
+                            });
+                            boxOutput = `BoxElems=(${list.join(",")})`;
+                        }
+                    });
+                    document.getElementById("collisionOutput").value =
+                        `(${boxOutput || "BoxElems="},${convexOutput || "ConvexElems="})`;
+                } catch(err) {
+                    alert("Invalid JSON file");
                 }
-            });
-        }
-
-        if (pendingSubs.length > 0) {
-            currentSubIndex = 0;
-            showNextSubLevel();
-        } else {
-            finalizeConversion();
-        }
-    }
-
-    function showNextSubLevel() {
-        document.getElementById('sub-path').textContent = pendingSubs[currentSubIndex];
-        document.getElementById('sub-counter').textContent = currentSubIndex + 1;
-        document.getElementById('sub-total').textContent = pendingSubs.length;
-        document.getElementById('sub-modal').classList.remove('hidden');
-    }
-
-    function submitSubLevel() {
-        const fileInput = document.getElementById('sub-file-input');
-        if (!fileInput.files[0]) return alert("Please select a JSON file for this POI");
-        
-        const reader = new FileReader();
-        reader.onload = ev => {
-            subLevels.set(pendingSubs[currentSubIndex], JSON.parse(ev.target.result));
-            currentSubIndex++;
-            document.getElementById('sub-modal').classList.add('hidden');
-            if (currentSubIndex < pendingSubs.length) showNextSubLevel();
-            else finalizeConversion();
-        };
-        reader.readAsText(fileInput.files[0]);
-    }
-
-    function skipSubLevel() {
-        currentSubIndex++;
-        document.getElementById('sub-modal').classList.add('hidden');
-        if (currentSubIndex < pendingSubs.length) showNextSubLevel();
-        else finalizeConversion();
-    }
-
-    function finalizeConversion() {
-        let output = `Begin Map\n    Begin Level\n\n`;
-
-        // Main actors
-        processActors(mainJSON, output, true);
-
-        // Sub-level actors
-        subLevels.forEach((subJSON, path) => {
-            output += `\n    // === SUB-LEVEL: ${path} ===\n`;
-            processActors(subJSON, output, false);
+            };
+            reader.readAsText(file);
         });
 
-        output += `    End Level\nBegin Surface\nEnd Surface\nEnd Map`;
-
-        document.getElementById('result-text').value = output;
-        document.getElementById('result-section').classList.remove('hidden');
-
-        convertCount++;
-        document.getElementById('convert-count').textContent = convertCount;
-    }
-
-    function processActors(jsonArray, outputRef, isMain) {
-        jsonArray.forEach((actor, i) => {
-            if (!actor || typeof actor !== "object") return;
-            if (actor.Outer && !actor.Outer.includes("PersistentLevel")) return;
-
-            const name = actor.Name || `Actor_${i}`;
-            let cls = "/Game/Unknown/Unknown_C";
-            if (actor.Class) {
-                const match = String(actor.Class).match(/'(.*?)'/);
-                if (match) cls = match[1];
-            }
-
-            outputRef += `        Begin Actor Class="${cls}" Name="${name}"\n`;
-
-            const props = actor.Properties || {};
-            if (props.RelativeLocation) {
-                const l = props.RelativeLocation;
-                outputRef += `            RelativeLocation=(X=${l.X||0},Y=${l.Y||0},Z=${l.Z||0})\n`;
-            }
-            if (props.RelativeRotation) {
-                const r = props.RelativeRotation;
-                outputRef += `            RelativeRotation=(Pitch=${r.Pitch||0},Yaw=${r.Yaw||0},Roll=${r.Roll||0})\n`;
-            }
-            if (props.RelativeScale3D || props.DrawScale3D) {
-                const s = props.RelativeScale3D || props.DrawScale3D;
-                outputRef += `            RelativeScale3D=(X=${s.X||1},Y=${s.Y||1},Z=${s.Z||1})\n`;
-            }
-
-            outputRef += `            ActorLabel="${name}"\n`;
-            outputRef += `            FolderPath="${settings.customFolder}"\n`;
-            outputRef += `        End Actor\n\n`;
+        document.getElementById("copyCollisionBtn").addEventListener("click", () => {
+            const text = document.getElementById("collisionOutput").value;
+            if (text) navigator.clipboard.writeText(text).then(() => alert("Copied!"));
         });
-    }
 
-    // ============== OTHER FUNCTIONS (simplified but working) ==============
-    function copyResult() {
-        navigator.clipboard.writeText(document.getElementById('result-text').value);
-        alert("✅ Copied! Paste slowly into Unreal Editor.");
-    }
-
-    function downloadResult() {
-        const text = document.getElementById('result-text').value;
-        const blob = new Blob([text], {type: 'text/plain'});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'Converted_Map.txt';
-        a.click();
-    }
-
-    function compareAssets() { /* Full implementation from previous versions */ alert("Missing Assets comparison ready (full logic available)"); }
-    function convertCollision() { /* Full collision logic */ alert("Collision converter active"); }
-    function saveSettings() {
-        settings.propagateLevels = document.getElementById('s-propagate').checked;
-        settings.autoFixTextures = document.getElementById('s-autofix').checked;
-        settings.buildingsOnly = document.getElementById('s-buildings').checked;
-        settings.customFolder = document.getElementById('s-folder').value || "Imported_POI";
-        alert("✅ Settings saved!");
-    }
-
-    // Init
-    switchTab(0);
-</script>
+        function copyField(id) {
+            const el = document.getElementById(id);
+            if (el) navigator.clipboard.writeText(el.value).then(() => alert("Copied to clipboard!"));
+        }
+    </script>
 </body>
 </html>
