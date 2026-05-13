@@ -8,11 +8,8 @@
     <style>
         :root {
             --bg:        #06080f;
-            --panel:     #0b0f1c;
             --card:      #0d1220;
             --border:    #1a2a4a;
-            --glow:      #1e6fff;
-            --glow-soft: rgba(30, 111, 255, 0.18);
             --accent:    #2979ff;
             --accent2:   #00c8ff;
             --text:      #c8d8f0;
@@ -32,26 +29,20 @@
 
         body::before {
             content: '';
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background-image:
                 linear-gradient(rgba(30,111,255,0.04) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(30,111,255,0.04) 1px, transparent 1px);
             background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 0;
+            pointer-events: none; z-index: 0;
         }
 
         header {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            position: relative; z-index: 10;
+            display: flex; align-items: center; justify-content: space-between;
             padding: 18px 40px;
             background: linear-gradient(180deg, #0a0e1d 0%, rgba(10,14,29,0.85) 100%);
             border-bottom: 1px solid var(--border);
-            backdrop-filter: blur(12px);
         }
 
         .header-left { display: flex; align-items: center; gap: 14px; }
@@ -67,17 +58,13 @@
 
         .header-title {
             font-family: 'Rajdhani', sans-serif;
-            font-size: 22px; font-weight: 700;
-            color: #fff; letter-spacing: 0.5px;
+            font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 0.5px;
         }
-
         .header-title span { color: var(--accent2); }
 
         .header-badge {
-            font-size: 11px; font-weight: 600;
-            color: var(--accent2);
-            background: rgba(0,200,255,0.1);
-            border: 1px solid rgba(0,200,255,0.25);
+            font-size: 11px; font-weight: 600; color: var(--accent2);
+            background: rgba(0,200,255,0.1); border: 1px solid rgba(0,200,255,0.25);
             padding: 2px 8px; border-radius: 20px; letter-spacing: 1px;
         }
 
@@ -86,125 +73,86 @@
 
         .nav {
             position: relative; z-index: 10;
-            display: flex; gap: 4px;
-            padding: 0 40px;
+            display: flex; gap: 4px; padding: 0 40px;
             background: rgba(10,14,29,0.9);
             border-bottom: 1px solid var(--border);
         }
 
         .nav-tab {
-            position: relative;
-            padding: 14px 24px;
+            position: relative; padding: 14px 24px;
             background: transparent; border: none;
-            color: var(--text-dim);
-            font-family: 'Inter', sans-serif;
-            font-size: 14px; font-weight: 500;
-            cursor: pointer; transition: color 0.2s;
-            letter-spacing: 0.3px;
+            color: var(--text-dim); font-family: 'Inter', sans-serif;
+            font-size: 14px; font-weight: 500; cursor: pointer;
+            transition: color 0.2s; letter-spacing: 0.3px;
         }
-
         .nav-tab::after {
-            content: '';
-            position: absolute;
-            bottom: -1px; left: 0; right: 0;
-            height: 2px;
-            background: var(--accent);
-            transform: scaleX(0);
-            transition: transform 0.2s;
-            box-shadow: 0 0 10px var(--accent);
+            content: ''; position: absolute;
+            bottom: -1px; left: 0; right: 0; height: 2px;
+            background: var(--accent); transform: scaleX(0);
+            transition: transform 0.2s; box-shadow: 0 0 10px var(--accent);
         }
-
         .nav-tab:hover { color: var(--text); }
         .nav-tab.active { color: #fff; }
         .nav-tab.active::after { transform: scaleX(1); }
 
         main {
             position: relative; z-index: 1;
-            padding: 32px 40px;
-            max-width: 1100px;
-            margin: 0 auto;
+            padding: 32px 40px; max-width: 1100px; margin: 0 auto;
         }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
-
-        /* UMAP tab: no padding, full width */
         #tab0.tab-content.active { display: flex; flex-direction: column; }
 
         @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
         .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 24px; margin-bottom: 20px;
+            position: relative; overflow: hidden;
         }
-
         .card::before {
-            content: '';
-            position: absolute; inset: 0;
+            content: ''; position: absolute; inset: 0;
             border-radius: 12px; padding: 1px;
             background: linear-gradient(135deg, rgba(30,111,255,0.3), transparent 60%);
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor; mask-composite: exclude;
-            pointer-events: none;
+            -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
         }
 
         .card-title {
             font-family: 'Rajdhani', sans-serif;
-            font-size: 16px; font-weight: 600;
-            color: #fff; letter-spacing: 0.5px;
-            margin-bottom: 16px;
-            display: flex; align-items: center; gap: 8px;
+            font-size: 16px; font-weight: 600; color: #fff; letter-spacing: 0.5px;
+            margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
         }
-
         .card-title .dot {
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: var(--accent);
-            box-shadow: 0 0 8px var(--accent);
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--accent); box-shadow: 0 0 8px var(--accent);
         }
 
         .dropzone {
-            border: 2px dashed rgba(30,111,255,0.35);
-            border-radius: 10px;
-            padding: 48px 24px;
-            text-align: center; cursor: pointer;
+            border: 2px dashed rgba(30,111,255,0.35); border-radius: 10px;
+            padding: 48px 24px; text-align: center; cursor: pointer;
             transition: border-color 0.2s, background 0.2s;
-            background: rgba(30,111,255,0.03);
-            position: relative;
+            background: rgba(30,111,255,0.03); position: relative;
         }
-
         .dropzone:hover, .dropzone.drag-over {
-            border-color: var(--accent);
-            background: rgba(30,111,255,0.08);
+            border-color: var(--accent); background: rgba(30,111,255,0.08);
         }
-
         .dropzone input[type=file] {
             position: absolute; inset: 0; opacity: 0;
             cursor: pointer; width: 100%; height: 100%;
         }
-
         .dropzone-icon { font-size: 40px; margin-bottom: 12px; display: block; }
         .dropzone-label { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 6px; }
         .dropzone-sub { font-size: 13px; color: var(--text-dim); }
         .dropzone-sub.has-file { color: var(--success); }
 
         textarea {
-            width: 100%;
-            background: rgba(6,8,15,0.8);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 14px;
-            font-family: 'Fira Code', 'Consolas', monospace;
-            font-size: 13px; resize: vertical;
-            transition: border-color 0.2s; outline: none;
+            width: 100%; background: rgba(6,8,15,0.8); color: var(--text);
+            border: 1px solid var(--border); border-radius: 8px; padding: 14px;
+            font-family: 'Fira Code', 'Consolas', monospace; font-size: 13px;
+            resize: vertical; transition: border-color 0.2s; outline: none;
         }
-
         textarea:focus {
             border-color: rgba(30,111,255,0.5);
             box-shadow: 0 0 0 3px rgba(30,111,255,0.1);
@@ -213,85 +161,59 @@
         .btn {
             display: inline-flex; align-items: center; gap: 8px;
             padding: 12px 28px; border: none; border-radius: 8px;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 15px; font-weight: 700;
-            letter-spacing: 1px; cursor: pointer;
-            transition: all 0.2s; text-transform: uppercase;
+            font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700;
+            letter-spacing: 1px; cursor: pointer; transition: all 0.2s; text-transform: uppercase;
         }
-
         .btn-primary {
-            background: linear-gradient(135deg, #1a52cc, #2979ff);
-            color: #fff;
+            background: linear-gradient(135deg, #1a52cc, #2979ff); color: #fff;
             box-shadow: 0 4px 20px rgba(41,121,255,0.3);
         }
-
         .btn-primary:hover {
             background: linear-gradient(135deg, #2060e0, #3d8bff);
-            box-shadow: 0 4px 28px rgba(41,121,255,0.5);
-            transform: translateY(-1px);
+            box-shadow: 0 4px 28px rgba(41,121,255,0.5); transform: translateY(-1px);
         }
-
         .btn-ghost {
-            background: rgba(30,111,255,0.1);
-            color: var(--accent2);
+            background: rgba(30,111,255,0.1); color: var(--accent2);
             border: 1px solid rgba(30,111,255,0.3);
         }
+        .btn-ghost:hover { background: rgba(30,111,255,0.2); border-color: var(--accent); }
 
-        .btn-ghost:hover {
-            background: rgba(30,111,255,0.2);
-            border-color: var(--accent);
-        }
-
-        .btn-wide { width: 100%; justify-content: center; padding: 16px; font-size: 16px; }
-
-        .action-row {
-            display: flex; align-items: center; gap: 10px;
-            margin: 16px 0; flex-wrap: wrap;
-        }
+        .action-row { display: flex; align-items: center; gap: 10px; margin: 16px 0; flex-wrap: wrap; }
 
         .info-box {
-            background: rgba(30,111,255,0.07);
-            border: 1px solid rgba(30,111,255,0.2);
-            border-radius: 8px;
-            padding: 14px 18px;
-            font-size: 13px; color: var(--text-dim);
+            background: rgba(30,111,255,0.07); border: 1px solid rgba(30,111,255,0.2);
+            border-radius: 8px; padding: 14px 18px; font-size: 13px; color: var(--text-dim);
             margin-bottom: 20px; line-height: 1.6;
         }
 
         .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-        /* UMAP iframe */
+        /* ── UMAP tab: iframe fills the space ── */
+        #tab0 { padding: 0; max-width: none; margin: 0; }
+
         #umap-wrapper {
-            position: relative;
-            width: 100%;
-            height: calc(100vh - 120px);
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            background: #000;
+            position: relative; width: 100%;
+            height: calc(100vh - 115px);
+            background: #060810;
         }
 
         #umap-frame {
-            width: 100%; height: 100%;
-            border: none; display: block;
+            width: 100%; height: 100%; border: none; display: block;
         }
 
         #umap-loading {
             position: absolute; inset: 0;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            gap: 16px; color: var(--text-dim);
-            font-size: 14px; background: var(--card);
+            gap: 16px; color: var(--text-dim); font-size: 14px;
+            background: var(--card);
         }
 
         .spinner {
             width: 40px; height: 40px;
-            border: 3px solid var(--border);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            border: 3px solid var(--border); border-top-color: var(--accent);
+            border-radius: 50%; animation: spin 0.8s linear infinite;
         }
-
         @keyframes spin { to { transform: rotate(360deg); } }
 
         ::-webkit-scrollbar { width: 6px; }
@@ -305,9 +227,7 @@
 <header>
     <div class="header-left">
         <div class="header-icon">🗺️</div>
-        <div>
-            <div class="header-title">Unreal <span>Multi-Tool</span></div>
-        </div>
+        <div><div class="header-title">Unreal <span>Multi-Tool</span></div></div>
         <div class="header-badge">v1.0</div>
     </div>
     <div class="header-stat">Tools: <strong>UMAP · Missing Assets · Collision</strong></div>
@@ -321,14 +241,17 @@
 
 <main>
 
-    <!-- TAB 0: UMAP Converter (iframe — works on GitHub Pages) -->
-    <div id="tab0" class="tab-content active" style="padding:0; max-width:none; margin:0;">
+    <!-- TAB 0: UMAP — iframe pointing directly to friend's live site -->
+    <div id="tab0" class="tab-content active">
         <div id="umap-wrapper">
             <div id="umap-loading">
                 <div class="spinner"></div>
                 Loading UMAP Converter...
             </div>
-            <iframe id="umap-frame" title="UMAP Converter"
+            <iframe
+                id="umap-frame"
+                src="https://senseiusagi.github.io/umap-to-uefn-converter/"
+                title="UMAP Converter"
                 onload="document.getElementById('umap-loading').style.display='none'">
             </iframe>
         </div>
@@ -359,7 +282,7 @@
         </div>
     </div>
 
-    <!-- TAB 2: Collision Converter -->
+    <!-- TAB 2: Collision -->
     <div id="tab2" class="tab-content">
         <div class="info-box">
             💠 <strong>Collision Converter</strong> — Upload an FModel AggGeom JSON and convert it to Unreal Engine format.
@@ -386,21 +309,11 @@
 </main>
 
 <script>
-    // ── IFRAME: point to umap-converter.html relative to current page ──
-    // Works both on GitHub Pages (https://user.github.io/repo/umap-converter.html)
-    // and locally via a server (http://localhost/umap-converter.html)
-    (function() {
-        const base = window.location.href.replace(/\/[^/]*(\?.*)?$/, '');
-        document.getElementById('umap-frame').src = base + '/umap-converter.html';
-    })();
-
-    // ── TAB SYSTEM ──
     function switchTab(n) {
         document.querySelectorAll('.nav-tab').forEach((b, i) => b.classList.toggle('active', i === n));
         document.querySelectorAll('.tab-content').forEach((c, i) => c.classList.toggle('active', i === n));
     }
 
-    // ── DROPZONE FILE LABEL ──
     document.getElementById('fileInput').addEventListener('change', function() {
         const name = this.files[0]?.name || 'No file selected';
         const el = document.getElementById('collFileName');
@@ -409,11 +322,10 @@
     });
 
     const collDrop = document.getElementById('collDropzone');
-    collDrop.addEventListener('dragover', () => collDrop.classList.add('drag-over'));
+    collDrop.addEventListener('dragover', e => { e.preventDefault(); collDrop.classList.add('drag-over'); });
     collDrop.addEventListener('dragleave', () => collDrop.classList.remove('drag-over'));
     collDrop.addEventListener('drop', () => collDrop.classList.remove('drag-over'));
 
-    // ── ASSET DIFF ──
     function canonicalizeAsset(raw) {
         if (!raw) return raw;
         let s = raw.replace(/^['"]+|['",\)\;]+$/g, "").trim();
@@ -440,7 +352,6 @@
         document.getElementById("outputBox").value = missing.length ? missing.join("\n") : "No missing assets found.";
     });
 
-    // ── COLLISION CONVERTER ──
     document.getElementById("convertButton").addEventListener("click", () => {
         const file = document.getElementById("fileInput").files[0];
         if (!file) return alert("Please upload JSON file first.");
@@ -487,7 +398,7 @@
 
     function copyField(id) {
         const el = document.getElementById(id);
-        if (el) navigator.clipboard.writeText(el.value).then(() => alert("Copied to clipboard!"));
+        if (el) navigator.clipboard.writeText(el.value).then(() => alert("Copied!"));
     }
 </script>
 </body>
