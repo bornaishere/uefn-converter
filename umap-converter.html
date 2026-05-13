@@ -5,17 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UMAP Converter</title>
     <script>
-        // The React bundle uses basename="/umap-to-uefn-converter"
-        // Rewrite the URL so React Router is satisfied before the bundle boots
-        var path = window.location.pathname;
-        if (!path.includes('/umap-to-uefn-converter')) {
-            var newPath = path.replace(/\/umap-converter\.html$/, '') + '/umap-to-uefn-converter';
-            window.history.replaceState(null, '', newPath);
-        }
+        // The React bundle has basename="/umap-to-uefn-converter" hardcoded.
+        // We must rewrite the browser path to start with that before the bundle boots,
+        // otherwise React Router matches nothing and renders a blank page.
+        (function() {
+            var p = window.location.pathname;
+            if (p.indexOf('/umap-to-uefn-converter') === -1) {
+                // Build the new path: keep everything up to and including the repo name,
+                // then append the required basename.
+                // e.g. /my-repo/umap-converter.html -> /umap-to-uefn-converter
+                window.history.replaceState(null, '', '/umap-to-uefn-converter');
+            }
+        })();
     </script>
 </head>
 <body style="margin:0;background:#060810;">
     <div id="root"></div>
+    <!-- Path to the JS is relative so it resolves from wherever this HTML is served -->
     <script src="main_0c740fe16c6875698c14.js"></script>
 </body>
 </html>
