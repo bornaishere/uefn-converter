@@ -3,169 +3,633 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unreal Multi-Tool - All In One</title>
+    <title>Unreal Multi-Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin:0; background:#1e1e1e; color:#ddd; }
-        h1 { text-align:center; color:#4fc3f7; padding:20px; margin:0; background:#252526; }
-        .tabs { display:flex; background:#252526; border-bottom:3px solid #333; }
-        .tab-button {
-            padding:16px 24px; background:transparent; border:none; color:#aaa; font-size:16px; cursor:pointer;
+        :root {
+            --bg:        #06080f;
+            --panel:     #0b0f1c;
+            --card:      #0d1220;
+            --border:    #1a2a4a;
+            --glow:      #1e6fff;
+            --glow-soft: rgba(30, 111, 255, 0.18);
+            --accent:    #2979ff;
+            --accent2:   #00c8ff;
+            --text:      #c8d8f0;
+            --text-dim:  #5a7099;
+            --success:   #00e5a0;
         }
-        .tab-button.active { background:#1e1e1e; color:#4fc3f7; border-bottom:4px solid #4fc3f7; }
-        .tab-content { display:none; padding:20px; background:#1e1e1e; }
-        .tab-content.active { display:block; }
-        textarea { width:100%; background:#252526; color:#ddd; border:1px solid #555; border-radius:4px; padding:12px; font-family:Consolas,monospace; box-sizing:border-box; }
-        button { background:#0e70c0; color:white; border:none; padding:12px 20px; margin:5px; border-radius:4px; cursor:pointer; }
-        button:hover { background:#1087e0; }
-        .instructions { background:#333; padding:15px; border-radius:6px; margin-bottom:15px; }
 
-        /* UMAP tab */
-        #tab2 { padding: 0; }
-        #umap-frame {
-            width: 100%;
-            height: calc(100vh - 120px);
-            min-height: 600px;
-            border: none;
-            display: block;
-            background: #1e1e1e;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
         }
+
+        /* Animated background grid */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(30,111,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(30,111,255,0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── HEADER ── */
+        header {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 40px;
+            background: linear-gradient(180deg, #0a0e1d 0%, rgba(10,14,29,0.85) 100%);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 0 18px rgba(41,121,255,0.5);
+        }
+
+        .header-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .header-title span {
+            color: var(--accent2);
+        }
+
+        .header-badge {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent2);
+            background: rgba(0,200,255,0.1);
+            border: 1px solid rgba(0,200,255,0.25);
+            padding: 2px 8px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+        }
+
+        .header-stat {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .header-stat strong {
+            color: var(--accent2);
+            font-weight: 600;
+        }
+
+        /* ── NAV TABS ── */
+        .nav {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            gap: 4px;
+            padding: 0 40px;
+            background: rgba(10,14,29,0.9);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-tab {
+            position: relative;
+            padding: 14px 24px;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-tab::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0; right: 0;
+            height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transition: transform 0.2s;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .nav-tab:hover { color: var(--text); }
+
+        .nav-tab.active {
+            color: #fff;
+        }
+
+        .nav-tab.active::after {
+            transform: scaleX(1);
+        }
+
+        /* ── MAIN CONTENT ── */
+        main {
+            position: relative;
+            z-index: 1;
+            padding: 32px 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(30,111,255,0.3), transparent 60%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .card-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        /* ── DROP ZONE ── */
+        .dropzone {
+            border: 2px dashed rgba(30,111,255,0.35);
+            border-radius: 10px;
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            background: rgba(30,111,255,0.03);
+            position: relative;
+        }
+
+        .dropzone:hover, .dropzone.drag-over {
+            border-color: var(--accent);
+            background: rgba(30,111,255,0.08);
+        }
+
+        .dropzone input[type=file] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .dropzone-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .dropzone-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .dropzone-sub {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .dropzone-sub.has-file {
+            color: var(--success);
+        }
+
+        /* ── TEXTAREA ── */
+        textarea {
+            width: 100%;
+            background: rgba(6,8,15,0.8);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 13px;
+            resize: vertical;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: rgba(30,111,255,0.5);
+            box-shadow: 0 0 0 3px rgba(30,111,255,0.1);
+        }
+
+        /* ── BUTTONS ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1a52cc, #2979ff);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(41,121,255,0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2060e0, #3d8bff);
+            box-shadow: 0 4px 28px rgba(41,121,255,0.5);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn-ghost {
+            background: rgba(30,111,255,0.1);
+            color: var(--accent2);
+            border: 1px solid rgba(30,111,255,0.3);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(30,111,255,0.2);
+            border-color: var(--accent);
+        }
+
+        .btn-wide {
+            width: 100%;
+            justify-content: center;
+            padding: 16px;
+            font-size: 16px;
+        }
+
+        /* ── SECTION LABEL ── */
+        .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dim);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        /* ── GRID ── */
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        /* ── ACTION ROW ── */
+        .action-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 16px 0;
+            flex-wrap: wrap;
+        }
+
+        /* ── INFO BOX ── */
+        .info-box {
+            background: rgba(30,111,255,0.07);
+            border: 1px solid rgba(30,111,255,0.2);
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        /* ── UMAP TAB ── */
+        #tab2 { padding: 0; margin: -32px -40px; }
+        #umap-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 60vh;
+            gap: 20px;
+            color: var(--text-dim);
+        }
+        .spinner {
+            width: 48px; height: 48px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
     </style>
 </head>
 <body>
-    <h1>Unreal Engine Multi-Tool (All In One)</h1>
 
-    <div class="tabs">
-        <button class="tab-button active" onclick="switchTab(0)">Asset Diff</button>
-        <button class="tab-button" onclick="switchTab(1)">Collision Converter</button>
-        <button class="tab-button" onclick="switchTab(2)">UMAP Converter</button>
+<header>
+    <div class="header-left">
+        <div class="header-icon">🗺️</div>
+        <div>
+            <div class="header-title">Unreal <span>Multi-Tool</span></div>
+        </div>
+        <div class="header-badge">v1.0</div>
+    </div>
+    <div class="header-stat">Tools: <strong>Asset Diff · Collision · UMAP</strong></div>
+</header>
+
+<div class="nav">
+    <button class="nav-tab active" onclick="switchTab(0)">Main Converter</button>
+    <button class="nav-tab" onclick="switchTab(1)">Missing Assets</button>
+    <button class="nav-tab" onclick="switchTab(2)">Collision</button>
+</div>
+
+<main>
+
+    <!-- TAB 0: UMAP Converter -->
+    <div id="tab0" class="tab-content active">
+        <div class="info-box">
+            🚀 <strong>UMAP → UEFN Converter</strong> — Upload your exported level JSON and convert it to UEFN-compatible format.
+        </div>
+
+        <div class="card">
+            <div class="card-title"><span class="dot"></span>Upload Level JSON</div>
+            <div class="dropzone" id="umapDropzone">
+                <input type="file" id="umapFileInput" accept=".json">
+                <span class="dropzone-icon">☁️</span>
+                <div class="dropzone-label">Drop or Click to Upload Main Level JSON</div>
+                <div class="dropzone-sub" id="umapFileName">No file selected</div>
+            </div>
+        </div>
+
+        <button class="btn btn-primary btn-wide" id="umapConvertBtn">
+            🚀 START FULL CONVERSION
+        </button>
+
+        <div id="umapResultCard" style="display:none; margin-top:20px;">
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>Conversion Output</div>
+                <div class="action-row">
+                    <button class="btn btn-ghost" onclick="copyField('umapOutput')">📋 Copy Output</button>
+                    <button class="btn btn-ghost" onclick="downloadText('umapOutput', 'converted.txt')">⬇️ Download</button>
+                </div>
+                <textarea id="umapOutput" rows="16" readonly placeholder="Output will appear here..."></textarea>
+            </div>
+        </div>
     </div>
 
-    <!-- Tab 1: Asset Diff -->
-    <div id="tab0" class="tab-content active">
-        <div class="instructions"><strong>Asset Diff Tool</strong> — Compare Before &amp; After level exports</div>
-        <div style="display:flex; gap:20px;">
-            <div style="flex:1;">
-                <h3>Before</h3>
+    <!-- TAB 1: Asset Diff (Missing Assets) -->
+    <div id="tab1" class="tab-content">
+        <div class="info-box">
+            🔍 <strong>Missing Assets Tool</strong> — Paste your Before &amp; After level exports to find assets that were removed.
+        </div>
+
+        <div class="grid2">
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>Before</div>
                 <textarea id="beforeBox" rows="16" placeholder="Paste BEFORE level text..."></textarea>
             </div>
-            <div style="flex:1;">
-                <h3>After</h3>
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>After</div>
                 <textarea id="afterBox" rows="16" placeholder="Paste AFTER level text..."></textarea>
             </div>
         </div>
-        <div style="margin:15px 0;">
-            <input type="file" id="rulesFile" accept=".json">
-            <button id="compareButton">Compare</button>
-            <button onclick="copyField('outputBox')">Copy Result</button>
+
+        <div class="action-row">
+            <button class="btn btn-primary" id="compareButton">🔍 Compare</button>
+            <button class="btn btn-ghost" onclick="copyField('outputBox')">📋 Copy Result</button>
         </div>
-        <h3>Result</h3>
-        <textarea id="outputBox" rows="12" readonly></textarea>
+
+        <div class="card">
+            <div class="card-title"><span class="dot"></span>Missing Assets</div>
+            <textarea id="outputBox" rows="12" readonly placeholder="Missing assets will appear here..."></textarea>
+        </div>
     </div>
 
-    <!-- Tab 2: Collision Converter -->
-    <div id="tab1" class="tab-content">
-        <div class="instructions"><strong>Collision Converter</strong> — FModel AggGeom JSON to Unreal format</div>
-        <input type="file" id="fileInput" accept=".json"><br><br>
-        <button id="convertButton">Convert Collision</button>
-        <button id="copyCollisionBtn">Copy Output</button>
-        <h3>Output</h3>
-        <textarea id="collisionOutput" rows="18" readonly></textarea>
-    </div>
-
-    <!-- Tab 3: UMAP Converter (iframe, lazy-loaded) -->
+    <!-- TAB 2: Collision Converter -->
     <div id="tab2" class="tab-content">
-        <iframe id="umap-frame" title="UMAP to UEFN Converter"></iframe>
+        <div class="info-box">
+            💠 <strong>Collision Converter</strong> — Upload an FModel AggGeom JSON and convert it to Unreal Engine format.
+        </div>
+
+        <div class="card">
+            <div class="card-title"><span class="dot"></span>Upload Collision JSON</div>
+            <div class="dropzone" id="collDropzone">
+                <input type="file" id="fileInput" accept=".json">
+                <span class="dropzone-icon">📦</span>
+                <div class="dropzone-label">Drop or Click to Upload AggGeom JSON</div>
+                <div class="dropzone-sub" id="collFileName">No file selected</div>
+            </div>
+        </div>
+
+        <div class="action-row">
+            <button class="btn btn-primary" id="convertButton">⚙️ Convert Collision</button>
+            <button class="btn btn-ghost" id="copyCollisionBtn">📋 Copy Output</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><span class="dot"></span>Output</div>
+            <textarea id="collisionOutput" rows="18" readonly placeholder="Converted collision data will appear here..."></textarea>
+        </div>
     </div>
 
-    <script>
-        // Tab System
-        let umapLoaded = false;
+</main>
 
-        function switchTab(n) {
-            document.querySelectorAll('.tab-button').forEach((b, i) => b.classList.toggle('active', i === n));
-            document.querySelectorAll('.tab-content').forEach((c, i) => c.classList.toggle('active', i === n));
+<!-- Load the UMAP React bundle -->
+<script src="main_0c740fe16c6875698c14.js"></script>
 
-            // Lazy-load the UMAP iframe on first open
-            if (n === 2 && !umapLoaded) {
-                umapLoaded = true;
-                // Resolve relative to wherever index.html is served from (works on GitHub Pages subpaths)
-                const base = window.location.href.replace(/\/[^/]*$/, '');
-                document.getElementById('umap-frame').src = base + '/umap-converter.html';
+<script>
+    // ── TAB SYSTEM ──
+    function switchTab(n) {
+        document.querySelectorAll('.nav-tab').forEach((b, i) => b.classList.toggle('active', i === n));
+        document.querySelectorAll('.tab-content').forEach((c, i) => c.classList.toggle('active', i === n));
+    }
+
+    // ── DROPZONE FILE LABELS ──
+    document.getElementById('umapFileInput').addEventListener('change', function() {
+        const name = this.files[0]?.name || 'No file selected';
+        const el = document.getElementById('umapFileName');
+        el.textContent = name;
+        el.classList.toggle('has-file', !!this.files[0]);
+    });
+
+    document.getElementById('fileInput').addEventListener('change', function() {
+        const name = this.files[0]?.name || 'No file selected';
+        const el = document.getElementById('collFileName');
+        el.textContent = name;
+        el.classList.toggle('has-file', !!this.files[0]);
+    });
+
+    // Drag-over visual feedback
+    ['umapDropzone','collDropzone'].forEach(id => {
+        const el = document.getElementById(id);
+        el.addEventListener('dragover', () => el.classList.add('drag-over'));
+        el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+        el.addEventListener('drop', () => el.classList.remove('drag-over'));
+    });
+
+    // ── UMAP CONVERT BUTTON (placeholder — React app handles real conversion) ──
+    document.getElementById('umapConvertBtn').addEventListener('click', () => {
+        const file = document.getElementById('umapFileInput').files[0];
+        if (!file) return alert('Please upload a JSON file first.');
+        // The React bundle (main_0c740fe16c6875698c14.js) handles real UMAP conversion.
+        // This button is a UI placeholder; the React app renders into #root if present.
+        alert('Use the UMAP Converter tab in the loaded React app above, or ensure the React bundle loaded correctly.');
+    });
+
+    // ── ASSET DIFF ──
+    function canonicalizeAsset(raw) {
+        if (!raw) return raw;
+        let s = raw.replace(/^['"]+|['",\)\;]+$/g, "").trim();
+        if (!s.includes(".")) return s;
+        const firstDot = s.indexOf(".");
+        const main = s.substring(0, firstDot);
+        const rest = s.substring(firstDot + 1);
+        if (/^\d+$/.test(rest)) return main;
+        const secondClean = rest.split(".")[0].replace(/^Default__/, "").replace(/_C$/, "");
+        return secondClean ? `${main}.${secondClean}` : main;
+    }
+
+    function findAllMatches(text) {
+        return [...text.matchAll(/\/Game\/[^\s"']+/g)].map(m => canonicalizeAsset(m[0]));
+    }
+
+    document.getElementById("compareButton").addEventListener("click", () => {
+        const before = document.getElementById("beforeBox").value;
+        const after  = document.getElementById("afterBox").value;
+        if (!before || !after) return alert("Please paste both Before and After text");
+        const beforeSet = new Set(findAllMatches(before));
+        const afterSet  = new Set(findAllMatches(after));
+        const missing   = [...beforeSet].filter(x => !afterSet.has(x)).sort();
+        document.getElementById("outputBox").value = missing.length ? missing.join("\n") : "No missing assets found.";
+    });
+
+    // ── COLLISION CONVERTER ──
+    document.getElementById("convertButton").addEventListener("click", () => {
+        const file = document.getElementById("fileInput").files[0];
+        if (!file) return alert("Please upload JSON file first.");
+        const reader = new FileReader();
+        reader.onload = e => {
+            try {
+                const json = JSON.parse(e.target.result);
+                let convexOutput = "", boxOutput = "";
+                json.forEach(entry => {
+                    const geom = entry.Properties?.AggGeom;
+                    if (!geom) return;
+                    if (geom.ConvexElems) {
+                        const list = geom.ConvexElems.map(elem => {
+                            const verts = elem.VertexData.map(v => `(X=${v.X},Y=${v.Y},Z=${v.Z})`).join(",");
+                            return `(VertexData=(${verts}),IndexData=(${elem.IndexData.join(",")}),ElemBox=(Min=(X=${elem.ElemBox.Min.X},Y=${elem.ElemBox.Min.Y},Z=${elem.ElemBox.Min.Z}),Max=(X=${elem.ElemBox.Max.X},Y=${elem.ElemBox.Max.Y},Z=${elem.ElemBox.Max.Z}),IsValid=True))`;
+                        });
+                        convexOutput = `ConvexElems=(${list.join(",")})`;
+                    }
+                    if (geom.BoxElems) {
+                        const list = geom.BoxElems.map(elem => {
+                            const c = elem.Center, r = elem.Rotation;
+                            return `(Center=(X=${c.X},Y=${c.Y},Z=${c.Z}),Rotation=(Pitch=${r.Pitch},Yaw=${r.Yaw},Roll=${r.Roll}),X=${elem.X},Y=${elem.Y},Z=${elem.Z})`;
+                        });
+                        boxOutput = `BoxElems=(${list.join(",")})`;
+                    }
+                });
+                document.getElementById("collisionOutput").value =
+                    `(${boxOutput || "BoxElems="},${convexOutput || "ConvexElems="})`;
+            } catch(err) {
+                alert("Invalid JSON file");
             }
-        }
+        };
+        reader.readAsText(file);
+    });
 
-        // ==================== ASSET DIFF TOOL ====================
-        function canonicalizeAsset(raw) {
-            if (!raw) return raw;
-            let s = raw.replace(/^['"]+|['",\)\;]+$/g, "").trim();
-            if (!s.includes(".")) return s;
-            const firstDot = s.indexOf(".");
-            const main = s.substring(0, firstDot);
-            const rest = s.substring(firstDot + 1);
-            if (/^\d+$/.test(rest)) return main;
-            const secondClean = rest.split(".")[0].replace(/^Default__/, "").replace(/_C$/, "");
-            return secondClean ? `${main}.${secondClean}` : main;
-        }
+    document.getElementById("copyCollisionBtn").addEventListener("click", () => {
+        const text = document.getElementById("collisionOutput").value;
+        if (text) navigator.clipboard.writeText(text).then(() => flashBtn('copyCollisionBtn', '✅ Copied!'));
+    });
 
-        function findAllMatches(text) {
-            return [...text.matchAll(/\/Game\/[^\s"']+/g)].map(m => canonicalizeAsset(m[0]));
-        }
+    // ── HELPERS ──
+    function copyField(id) {
+        const el = document.getElementById(id);
+        if (el) navigator.clipboard.writeText(el.value).then(() => alert("Copied to clipboard!"));
+    }
 
-        document.getElementById("compareButton").addEventListener("click", () => {
-            const before = document.getElementById("beforeBox").value;
-            const after  = document.getElementById("afterBox").value;
-            if (!before || !after) return alert("Please paste both Before and After text");
-            const beforeSet = new Set(findAllMatches(before));
-            const afterSet  = new Set(findAllMatches(after));
-            const missing   = [...beforeSet].filter(x => !afterSet.has(x)).sort();
-            document.getElementById("outputBox").value = missing.length ? missing.join("\n") : "No missing assets found.";
-        });
+    function downloadText(id, filename) {
+        const text = document.getElementById(id).value;
+        if (!text) return;
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
+        a.download = filename;
+        a.click();
+    }
 
-        // ==================== COLLISION CONVERTER ====================
-        document.getElementById("convertButton").addEventListener("click", () => {
-            const file = document.getElementById("fileInput").files[0];
-            if (!file) return alert("Please upload JSON file first.");
-            const reader = new FileReader();
-            reader.onload = e => {
-                try {
-                    const json = JSON.parse(e.target.result);
-                    let convexOutput = "", boxOutput = "";
-                    json.forEach(entry => {
-                        const geom = entry.Properties?.AggGeom;
-                        if (!geom) return;
-                        if (geom.ConvexElems) {
-                            const list = geom.ConvexElems.map(elem => {
-                                const verts = elem.VertexData.map(v => `(X=${v.X},Y=${v.Y},Z=${v.Z})`).join(",");
-                                return `(VertexData=(${verts}),IndexData=(${elem.IndexData.join(",")}),ElemBox=(Min=(X=${elem.ElemBox.Min.X},Y=${elem.ElemBox.Min.Y},Z=${elem.ElemBox.Min.Z}),Max=(X=${elem.ElemBox.Max.X},Y=${elem.ElemBox.Max.Y},Z=${elem.ElemBox.Max.Z}),IsValid=True))`;
-                            });
-                            convexOutput = `ConvexElems=(${list.join(",")})`;
-                        }
-                        if (geom.BoxElems) {
-                            const list = geom.BoxElems.map(elem => {
-                                const c = elem.Center, r = elem.Rotation;
-                                return `(Center=(X=${c.X},Y=${c.Y},Z=${c.Z}),Rotation=(Pitch=${r.Pitch},Yaw=${r.Yaw},Roll=${r.Roll}),X=${elem.X},Y=${elem.Y},Z=${elem.Z})`;
-                            });
-                            boxOutput = `BoxElems=(${list.join(",")})`;
-                        }
-                    });
-                    document.getElementById("collisionOutput").value =
-                        `(${boxOutput || "BoxElems="},${convexOutput || "ConvexElems="})`;
-                } catch(err) {
-                    alert("Invalid JSON file");
-                }
-            };
-            reader.readAsText(file);
-        });
-
-        document.getElementById("copyCollisionBtn").addEventListener("click", () => {
-            const text = document.getElementById("collisionOutput").value;
-            if (text) navigator.clipboard.writeText(text).then(() => alert("Copied!"));
-        });
-
-        function copyField(id) {
-            const el = document.getElementById(id);
-            if (el) navigator.clipboard.writeText(el.value).then(() => alert("Copied to clipboard!"));
-        }
-    </script>
+    function flashBtn(id, label) {
+        const btn = document.getElementById(id);
+        const orig = btn.textContent;
+        btn.textContent = label;
+        setTimeout(() => btn.textContent = orig, 1500);
+    }
+</script>
 </body>
 </html>
