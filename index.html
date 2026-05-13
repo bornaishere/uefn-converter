@@ -72,22 +72,25 @@
         <textarea id="collisionOutput" rows="18" readonly></textarea>
     </div>
 
-    <!-- Tab 3: UMAP Converter (iframe) -->
+    <!-- Tab 3: UMAP Converter (iframe, lazy-loaded) -->
     <div id="tab2" class="tab-content">
         <iframe id="umap-frame" title="UMAP to UEFN Converter"></iframe>
     </div>
 
     <script>
-        // Tab System — lazy-loads the UMAP iframe on first visit
+        // Tab System
         let umapLoaded = false;
 
         function switchTab(n) {
             document.querySelectorAll('.tab-button').forEach((b, i) => b.classList.toggle('active', i === n));
             document.querySelectorAll('.tab-content').forEach((c, i) => c.classList.toggle('active', i === n));
 
+            // Lazy-load the UMAP iframe on first open
             if (n === 2 && !umapLoaded) {
                 umapLoaded = true;
-                document.getElementById('umap-frame').src = 'umap-converter.html';
+                // Resolve relative to wherever index.html is served from (works on GitHub Pages subpaths)
+                const base = window.location.href.replace(/\/[^/]*$/, '');
+                document.getElementById('umap-frame').src = base + '/umap-converter.html';
             }
         }
 
@@ -110,7 +113,7 @@
 
         document.getElementById("compareButton").addEventListener("click", () => {
             const before = document.getElementById("beforeBox").value;
-            const after = document.getElementById("afterBox").value;
+            const after  = document.getElementById("afterBox").value;
             if (!before || !after) return alert("Please paste both Before and After text");
             const beforeSet = new Set(findAllMatches(before));
             const afterSet  = new Set(findAllMatches(after));
